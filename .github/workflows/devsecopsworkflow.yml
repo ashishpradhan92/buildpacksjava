@@ -5,33 +5,33 @@ on:
     #   - dev
     #   - master  # Change to your default branch name if needed
 jobs:
-  SBOM:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+  # SBOM:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout Repository
+  #       uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
+  #     - name: Set up Java
+  #       uses: actions/setup-java@v3
 
-        with:
-          java-version: 11
-          distribution: 'adopt'  # You can adjust the Java version as needed
+  #       with:
+  #         java-version: 11
+  #         distribution: 'adopt'  # You can adjust the Java version as needed
 
-      - name: Generate SBOM
-        run: mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom
+  #     - name: Generate SBOM
+  #       run: mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom
 
-      - name: Upload SBOM report to artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: "sbom-${{ github.run_number }}"
-          path: target/CycloneDX-Sbom.json
+  #     - name: Upload SBOM report to artifact
+  #       uses: actions/upload-artifact@v3
+  #       with:
+  #         name: "sbom-${{ github.run_number }}"
+  #         path: target/CycloneDX-Sbom.json
 
 
 
   build:
     runs-on: ubuntu-latest
-    needs: [ SBOM ]
+    #needs: [ SBOM ]
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
@@ -42,6 +42,10 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn clean install
+
+      - name: Check Java version
+        run: java -version
+      
       - uses: docker/login-action@v3
         with:
           registry: docker.io

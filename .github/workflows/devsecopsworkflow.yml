@@ -35,16 +35,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-      - name: Build with Maven
-        run: mvn clean install
-
-      - name: Check Java version
-        run: java -version
+      # - name: Build with Maven
+      #   run: mvn clean install
       
       - uses: docker/login-action@v3
         with:
@@ -55,22 +52,22 @@ jobs:
         id: vars
           #run: echo "sha_short::$(git rev-parse --short HEAD)"
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-      - name: Install Buildpacks
-        run: |
-          curl -sL https://github.com/buildpacks/pack/releases/download/v0.25.0/pack-v0.25.0-linux.tgz | tar xvz
-          sudo mv pack /usr/local/bin/pack
-  
-      - name: Build with Buildpacks
-        run: |
-          pack build --path . --builder heroku/buildpacks:20 --env BP_JVM_VERSION=11 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}
-      # - id: setup-tools
-      #   uses: buildpacks/github-actions/setup-tools@v5.1.0
-      # - id: setup-pack
-      #   uses: buildpacks/github-actions/setup-pack@v5.1.0
-      # - id: package
+      # - name: Install Buildpacks
       #   run: |
-      #     #!/usr/bin/env bash
-      #     pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
+      #     curl -sL https://github.com/buildpacks/pack/releases/download/v0.25.0/pack-v0.25.0-linux.tgz | tar xvz
+      #     sudo mv pack /usr/local/bin/pack
+  
+      # - name: Build with Buildpacks
+      #   run: |
+      #     pack build --path . --builder heroku/buildpacks:20 --env BP_JVM_VERSION=11 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}
+      - id: setup-tools
+        uses: buildpacks/github-actions/setup-tools@v5.1.0
+      - id: setup-pack
+        uses: buildpacks/github-actions/setup-pack@v5.1.0
+      - id: package
+        run: |
+          #!/usr/bin/env bash
+          pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
         shell: bash
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}

@@ -55,14 +55,22 @@ jobs:
         id: vars
           #run: echo "sha_short::$(git rev-parse --short HEAD)"
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-      - id: setup-tools
-        uses: buildpacks/github-actions/setup-tools@v5.1.0
-      - id: setup-pack
-        uses: buildpacks/github-actions/setup-pack@v5.1.0
-      - id: package
+      - name: Install Buildpacks
         run: |
-          #!/usr/bin/env bash
-          pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
+          curl -sL https://github.com/buildpacks/pack/releases/download/v0.25.0/pack-v0.25.0-linux.tgz | tar xvz
+          sudo mv pack /usr/local/bin/pack
+  
+      - name: Build with Buildpacks
+        run: |
+          pack build --path . --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}
+      # - id: setup-tools
+      #   uses: buildpacks/github-actions/setup-tools@v5.1.0
+      # - id: setup-pack
+      #   uses: buildpacks/github-actions/setup-pack@v5.1.0
+      # - id: package
+      #   run: |
+      #     #!/usr/bin/env bash
+      #     pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
         shell: bash
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}

@@ -34,10 +34,10 @@ jobs:
     #needs: [ SBOM ]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 17
+      - name: Set up JDK 11
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '11'
           distribution: 'temurin'
           cache: maven
       # - name: Build with Maven
@@ -67,7 +67,7 @@ jobs:
       - id: package
         run: |
           #!/usr/bin/env bash
-          pack build --path .  --builder heroku/buildpacks:18 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
+          pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
         shell: bash
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}

@@ -121,6 +121,9 @@
                     <jvmArguments>
                         -Dcom.sun.jndi.ldap.object.trustURLCodebase=true
                     </jvmArguments>
+                    <image>
+		      <name>javacoffeeshop/${project.artifactId}</name>
+		  </image>
                 </configuration>
             </plugin>
             <plugin>

@@ -54,9 +54,9 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       
       - id: setup-tools
-        uses: buildpacks/github-actions/setup-tools@v5.1.0
+        uses: buildpacks/github-actions/setup-tools@v5.5.1
       - id: setup-pack
-        uses: buildpacks/github-actions/setup-pack@v5.1.0
+        uses: buildpacks/github-actions/setup-pack@v5.5.1
       - id: package
         run: |
           #!/usr/bin/env bash

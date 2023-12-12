@@ -48,10 +48,10 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASS }}
-      # - name: Get git sha short
-      #   id: vars
-      #      #run: echo "sha_short::$(git rev-parse --short HEAD)"
-      #   run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: Get git sha short
+        id: vars
+      #     #run: echo "sha_short::$(git rev-parse --short HEAD)"
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       
       - id: setup-tools
         uses: buildpacks/github-actions/setup-tools@v5.5.1
@@ -61,28 +61,15 @@ jobs:
         run: |
           # !/usr/bin/env bash
           mvn spring-boot:build-image
-          #pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }} 
-          docker tag docker.io/library/javacoffeeshopapp:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+          #pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
         shell: bash
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
-        with:
-          image-ref: '${{ secrets.DOCKER_REPO }}:${{ github.run_number }}'
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          # severity: 'CRITICAL,HIGH'
-    
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
-
       - name: Publish Docker image
-        run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+        run: |
+          docker tag docker.io/library/javacoffeeshopapp:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+          docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
       
 
   # opensource-security:

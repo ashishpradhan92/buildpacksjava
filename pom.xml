@@ -122,7 +122,7 @@
                         -Dcom.sun.jndi.ldap.object.trustURLCodebase=true
                     </jvmArguments>
                     <image>
-		      <name>javacoffeeshop/app</name>
+		      <name>javacoffeeshopapp:${build.id}</name>
 		  </image>
                 </configuration>
             </plugin>

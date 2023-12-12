@@ -62,7 +62,8 @@ jobs:
       - id: package
         run: |
           # !/usr/bin/env bash
-          mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}      
+          mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
+          docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
         shell: bash
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
@@ -82,9 +83,7 @@ jobs:
           sarif_file: 'trivy-results.sarif'
 
       - name: Publish Docker image
-        run: |
-          docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
-          docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+        run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
       
 
   # opensource-security:

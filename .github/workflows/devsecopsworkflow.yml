@@ -70,7 +70,7 @@ jobs:
 
       - name: Publish Docker image
         run: |
-          docker tag docker.io/library/javacoffeeshopapp:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+          docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
           docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
       
 

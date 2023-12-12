@@ -66,6 +66,9 @@ jobs:
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
 
+      - name: Publish Docker image
+        run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+
   # opensource-security:
   #   needs: [ build ]
   #   runs-on: ubuntu-latest

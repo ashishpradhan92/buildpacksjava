@@ -1,6 +1,6 @@
 name: DevSecOps Pipeline Demo
 on:
-  workflow_call:
+  workflow_dispatch:
 jobs:
   # SBOM:
   #   runs-on: ubuntu-latest

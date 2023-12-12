@@ -61,7 +61,8 @@ jobs:
         run: |
           # !/usr/bin/env bash
           mvn spring-boot:build-image
-          #pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
+          #pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }} 
+          docker tag docker.io/library/javacoffeeshopapp:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
         shell: bash
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
@@ -81,9 +82,7 @@ jobs:
           sarif_file: 'trivy-results.sarif'
 
       - name: Publish Docker image
-        run: |
-          docker tag docker.io/library/javacoffeeshopapp:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
-          docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+        run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
       
 
   # opensource-security:

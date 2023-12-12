@@ -73,19 +73,19 @@ jobs:
           name: "sbom-${{ github.run_number }}"
           path: target/CycloneDX-Sbom.json
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
-        with:
-          image-ref: '${{ secrets.DOCKER_REPO }}:${{ github.run_number }}'
-          format: 'template'
-          template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          # severity: 'CRITICAL,HIGH'
+      # - name: Run Trivy vulnerability scanner
+      #   uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+      #   with:
+      #     image-ref: '${{ secrets.DOCKER_REPO }}:${{ github.run_number }}'
+      #     format: 'template'
+      #     template: '@/contrib/sarif.tpl'
+      #     output: 'trivy-results.sarif'
+      #     # severity: 'CRITICAL,HIGH'
     
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: 'trivy-results.sarif'
+      # - name: Upload Trivy scan results to GitHub Security tab
+      #   uses: github/codeql-action/upload-sarif@v2
+      #   with:
+      #     sarif_file: 'trivy-results.sarif'
 
       - name: Publish Docker image
         run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}

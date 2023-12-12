@@ -78,7 +78,6 @@ jobs:
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
-          github_token: ${{ secrets.AUTO_COMMIT_TOKEN }}
           sarif_file: 'trivy-results.sarif'
 
       - name: Publish Docker image

@@ -67,6 +67,12 @@ jobs:
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
 
+      - name: Upload SBOM report to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "sbom-${{ github.run_number }}"
+          path: target/CycloneDX-Sbom.json
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         with:

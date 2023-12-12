@@ -123,7 +123,7 @@
                     </jvmArguments>
                     <image>
 <!-- 		      <name>javacoffeeshopapp:1.0.${{ github.run_number }}</name> -->
-		      <name>javacoffeeshopapp</name>
+		      <name>javacoffeeshop/app:1.0.${{ github.run_number }}</name>
 		  </image>
                 </configuration>
             </plugin>

@@ -67,7 +67,9 @@ jobs:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
 
       - name: Publish Docker image
-        run: docker push ${{ secrets.DOCKER_REPO }}:javacoffeeshopapp:latest
+        run: |
+          docker tag docker.io/library/javacoffeeshopapp:latest ${{ secrets.DOCKER_REPO }}:latest
+          docker push ${{ secrets.DOCKER_REPO }}:latest
       
 
   # opensource-security:

@@ -73,19 +73,19 @@ jobs:
           name: "sbom-${{ github.run_number }}"
           path: target/CycloneDX-Sbom.json
 
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
-      #   with:
-      #     image-ref: '${{ secrets.DOCKER_REPO }}:${{ github.run_number }}'
-      #     format: 'template'
-      #     template: '@/contrib/sarif.tpl'
-      #     output: 'trivy-results.sarif'
-      #     # severity: 'CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+        with:
+          image-ref: '${{ secrets.DOCKER_REPO }}:${{ github.run_number }}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          # severity: 'CRITICAL,HIGH'
     
-      # - name: Upload Trivy scan results to GitHub Security tab
-      #   uses: github/codeql-action/upload-sarif@v2
-      #   with:
-      #     sarif_file: 'trivy-results.sarif'
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
 
       - name: Publish Docker image
         run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
@@ -144,35 +144,34 @@ jobs:
   #     - name: Publish Docker image
   #       run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
 
-  # Deploy:
-  #     needs: Docker_push
-  #     runs-on: ubuntu-latest
-  #     steps:
-  #       - name: Checkout Repository
-  #         uses: actions/checkout@v3
-  #         with:
-  #           repository: Ragavendira1/javacoffeeshop   # Replace with the repository URL
-  #           ref: main 
-  #           token: ${{secrets.PAT_TOKEN }}
-
+  Deploy:
+      needs: build
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v3
+          with:
+            repository: ashishpradhan92/buildpacksdeployment   # Replace with the repository URL
+            ref: main
+            token: ${{secrets.AUTO_COMMIT_TOKEN }} 
 
   
-  #       - name: Modify Manifest
-  #         run: |
-  #             # Replace the image and tag in the manifest file
-  #             echo "GitHub Runnumber: ${{ github.run_number }}"
-  #             sed -i "s|xplatformexpleo/devsecops:.*|xplatformexpleo/devsecops:${{ github.run_number }}|" ./manifest/deployment.yaml
+        - name: Modify Manifest
+          run: |
+              # Replace the image and tag in the manifest file
+              echo "GitHub Runnumber: ${{ github.run_number }}"
+              sed -i "s|${{ secrets.DOCKER_REPO }}:.*|${{ secrets.DOCKER_REPO }}:${{ github.run_number }}|" ./manifest/deployment.yaml
         
-  #       - name: Debug - Show Git Status After Changes
-  #         run: git status
-  #         shell: bash
+        - name: Debug - Show Git Status After Changes
+          run: git status
+          shell: bash
   
-  #       - name: Commit and Push Change
-  #         run: |
-  #             git config --global user.name "Ragavendira1"
-  #             git config --global user.email "rragavendira@gmail.com"
-  #             git add ./manifest/deployment.yaml
-  #             git commit -m "Update image tag"
-  #             git push origin main  
-  #         env:
-  #           PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        - name: Commit and Push Change
+          run: |
+              git config --global user.name "ashishpradhan92"
+              git config --global user.email "ashishvpradhan92@gmail.com"
+              git add ./manifest/deployment.yaml
+              git commit -m "Update image tag"
+              git push origin main  
+          env:
+            PAT_TOKEN: ${{ secrets.AUTO_COMMIT_TOKEN }}

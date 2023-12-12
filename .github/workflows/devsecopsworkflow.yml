@@ -31,6 +31,8 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      RUN_NUMBER: ${{ github.run_number }}
     #needs: [ SBOM ]
     steps:
       - uses: actions/checkout@v3
@@ -60,7 +62,7 @@ jobs:
       - id: package
         run: |
           # !/usr/bin/env bash
-          mvn spring-boot:build-image
+          mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
           #pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
         shell: bash
         env:

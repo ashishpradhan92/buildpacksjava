@@ -1,9 +1,9 @@
 name: DevSecOps Pipeline Demo
 on:
-  push
-    # branches:
-    #   - dev
-    #   - master  # Change to your default branch name if needed
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
 jobs:
   # SBOM:
   #   runs-on: ubuntu-latest
@@ -31,6 +31,8 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
+    env:
+      RUN_NUMBER: ${{ github.run_number }}
     #needs: [ SBOM ]
     steps:
       - uses: actions/checkout@v3
@@ -40,18 +42,16 @@ jobs:
           java-version: '11'
           distribution: 'temurin'
           cache: maven
-      # - name: Build with Maven
-      #   run: mvn -B package
       
       - uses: docker/login-action@v3
         with:
           registry: docker.io
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASS }}
-      - name: Get git sha short
-        id: vars
-      #     #run: echo "sha_short::$(git rev-parse --short HEAD)"
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      # - name: Get git sha short
+      #   id: vars
+      # #     #run: echo "sha_short::$(git rev-parse --short HEAD)"
+      #   run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       
       - id: setup-tools
         uses: buildpacks/github-actions/setup-tools@v5.5.1
@@ -59,11 +59,30 @@ jobs:
         uses: buildpacks/github-actions/setup-pack@v5.5.1
       - id: package
         run: |
-          #!/usr/bin/env bash
-          pack build --path .  --builder heroku/buildpacks:20 --publish ${REPO}/cnb:sha-${{ steps.vars.outputs.sha_short }}   
+          # !/usr/bin/env bash
+          mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
+          docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
         shell: bash
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+        with:
+          image-ref: '${{ secrets.DOCKER_REPO }}:${{ github.run_number }}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          # severity: 'CRITICAL,HIGH'
+    
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Publish Docker image
+        run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+      
 
   # opensource-security:
   #   needs: [ build ]

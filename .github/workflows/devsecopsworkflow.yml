@@ -56,41 +56,41 @@ jobs:
       # #     #run: echo "sha_short::$(git rev-parse --short HEAD)"
       #   run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       
-      # - id: setup-tools
-      #   uses: buildpacks/github-actions/setup-tools@v5.5.1
-      # - id: setup-pack
-      #   uses: buildpacks/github-actions/setup-pack@v5.5.1
-      # - id: package
-      #   run: |
-      #     # !/usr/bin/env bash
-      #     mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
-      #     docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
-      #   shell: bash
-      #   env:
-      #     REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
+      - id: setup-tools
+        uses: buildpacks/github-actions/setup-tools@v5.5.1
+      - id: setup-pack
+        uses: buildpacks/github-actions/setup-pack@v5.5.1
+      - id: package
+        run: |
+          # !/usr/bin/env bash
+          mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
+          docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+        shell: bash
+        env:
+          REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
 
-      # - name: Upload SBOM report to artifact
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: "sbom-${{ github.run_number }}"
-      #     path: target/CycloneDX-Sbom.json
+      - name: Upload SBOM report to artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "sbom-${{ github.run_number }}"
+          path: target/CycloneDX-Sbom.json
 
-      # - name: Run Trivy vulnerability scanner
-      #   uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
-      #   with:
-      #     image-ref: '${{ secrets.DOCKER_REPO }}:${{ github.run_number }}'
-      #     format: 'template'
-      #     template: '@/contrib/sarif.tpl'
-      #     output: 'trivy-results.sarif'
-      #     # severity: 'CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
+        with:
+          image-ref: '${{ secrets.DOCKER_REPO }}:${{ github.run_number }}'
+          format: 'template'
+          template: '@/contrib/sarif.tpl'
+          output: 'trivy-results.sarif'
+          # severity: 'CRITICAL,HIGH'
     
-      # - name: Upload Trivy scan results to GitHub Security tab
-      #   uses: github/codeql-action/upload-sarif@v2
-      #   with:
-      #     sarif_file: 'trivy-results.sarif'
-      - name: Build Container image
-        run: docker build -t ${{ secrets.DOCKER_REPO }}:${{ github.run_number }} .
-        
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+      # - name: Build Container image
+      #   run: docker build -t ${{ secrets.DOCKER_REPO }}:${{ github.run_number }} .
+
       - name: Publish Docker image
         run: docker push ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
       

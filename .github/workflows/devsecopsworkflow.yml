@@ -29,11 +29,12 @@ jobs:
         uses: buildpacks/github-actions/setup-tools@v5.5.1
       - name: setup-pack
         uses: buildpacks/github-actions/setup-pack@v5.5.1
-      - name: package
+      - name: Build App Image
         run: |
           # !/usr/bin/env bash
-          mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
-          docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+          pack build spring-boot-buildpack --path . --builder paketobuildpacks/builder:base
+          docker tag spring-boot-buildpack ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+
         shell: bash
         env:
           REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}

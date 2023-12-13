@@ -33,7 +33,7 @@ jobs:
         run: |
           # !/usr/bin/env bash
           mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
-          docker tag spring-boot-buildpack ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
+          docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
 
         shell: bash
         env:

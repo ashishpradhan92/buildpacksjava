@@ -32,7 +32,7 @@ jobs:
       - name: Build App Image
         run: |
           # !/usr/bin/env bash
-          pack build spring-boot-buildpack --path . --builder paketobuildpacks/builder:base
+          mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
           docker tag spring-boot-buildpack ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
 
         shell: bash

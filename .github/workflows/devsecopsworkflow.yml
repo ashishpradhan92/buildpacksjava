@@ -25,19 +25,19 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASS }}
       
-      - name: setup-tools
-        uses: buildpacks/github-actions/setup-tools@v5.5.1
-      - name: setup-pack
-        uses: buildpacks/github-actions/setup-pack@v5.5.1
+      # - name: setup-tools
+      #   uses: buildpacks/github-actions/setup-tools@v5.5.1
+      # - name: setup-pack
+      #   uses: buildpacks/github-actions/setup-pack@v5.5.1
       - name: Build App Image
         run: |
           # !/usr/bin/env bash
           mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
           docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
 
-        shell: bash
-        env:
-          REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
+        # shell: bash
+        # env:
+        #   REPO: docker.io/${{ secrets.DOCKER_HUB_USER }}
 
       - name: Upload SBOM report to artifact
         uses: actions/upload-artifact@v3

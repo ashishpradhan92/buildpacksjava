@@ -25,7 +25,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASS }}
      
-      # Build a container image using Springboot maven plugin which has the buildpacks integrated 
+      ## Build a container image using Springboot maven plugin which has the buildpacks integrated 
       - name: Build App Image
         run: |
           # !/usr/bin/env bash

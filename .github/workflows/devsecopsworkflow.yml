@@ -24,19 +24,22 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASS }}
-      
+     
+      # Build a container image using Springboot maven plugin which has the buildpacks integrated 
       - name: Build App Image
         run: |
           # !/usr/bin/env bash
           mvn spring-boot:build-image -Ddocker.image.tag=${RUN_NUMBER}
           docker tag docker.io/javacoffeeshop/app:latest ${{ secrets.DOCKER_REPO }}:${{ github.run_number }}
 
+      # SBOM is integrated with buildpacks. Upload the SBOM artifacts
       - name: Upload SBOM report to artifact
         uses: actions/upload-artifact@v3
         with:
           name: "sbom-${{ github.run_number }}"
           path: target/CycloneDX-Sbom.json
 
+      # Run the Trivy scanning for image scanning
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@7b7aa264d83dc58691451798b4d117d53d21edfe
         with:
@@ -64,7 +67,6 @@ jobs:
             ref: main
             token: ${{secrets.AUTO_COMMIT_TOKEN }} 
 
-  
         - name: Modify Manifest
           run: |
               # Replace the image and tag in the manifest file
